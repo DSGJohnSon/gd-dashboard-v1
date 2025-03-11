@@ -1,0 +1,201 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { AddCompanySchema } from "../../schemas";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useCreateCompany } from "../../api/use-create-company";
+import { LucideBuilding, LucideLoader } from "lucide-react";
+import { useListAllUsers } from "@/features/users/api/use-list-users";
+import { MultiSelect } from "@/components/ui/multi-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Flag from "react-world-flags";
+import { countries } from "@/data/countries";
+import { cn } from "@/lib/utils";
+
+type usersOptionsProps = {
+  value: string;
+  label: string;
+};
+
+function CompaniesAddForm() {
+  const { mutate, isPending } = useCreateCompany();
+  const { data: users, isLoading } = useListAllUsers();
+  const [usersOptions, setUsersOptions] = useState<usersOptionsProps[]>([]);
+
+  useEffect(() => {
+    let temp: usersOptionsProps[] = [];
+    if (users) {
+      temp = users.data.users.map((user) => ({
+        value: user.$id,
+        label: `${user.name} - (${user.email})`,
+      }));
+    }
+    setUsersOptions(temp);
+  }, [users]);
+
+  const form = useForm<z.infer<typeof AddCompanySchema>>({
+    resolver: zodResolver(AddCompanySchema),
+    defaultValues: {
+      name: "",
+      siret: "",
+      country: "",
+      users: [],
+    },
+  });
+  function onSubmit(values: z.infer<typeof AddCompanySchema>) {
+    console.log(values);
+    mutate(values);
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nom de l'entreprise</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Nom de l'entreprise"
+                  disabled={isPending}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="space-y-2 border border-foreground/10 p-4 rounded-lg">
+          <div className="inline-flex items-center space-x-1 px-3 py-1 bg-foreground/5  rounded-full">
+            <LucideBuilding className="size-3" />
+            <h2 className="text-xs">Informations légales</h2>
+          </div>
+          <FormField
+            control={form.control}
+            name="siret"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Numéro d'identification</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="ex: SIRET (xxx xxx xxx xxxxx)"
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>ex: Siret, NR, EIN, etc.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Pays d'immatriculation</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectioner un pays" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {countries.map((country, index) => (
+                      <SelectItem
+                        value={country.value}
+                        key={country.value + index}
+                        className="hover:bg-gray-100 hover:cursor-pointer">
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 flex items-center justify-center rounded-full overflow-hidden">
+                            <Flag
+                              code={country.code}
+                              className="w-full h-full object-cover"
+                              fallback={
+                                <span className="w-full h-full bg-black rounded-full block">
+                                  -
+                                </span>
+                              }
+                            />
+                          </div>
+                          {country.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Pays de résidence fiscale de l'entreprise.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="users"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                Membre(s) de l'entreprise -{" "}
+                <span className="py-0.5 px-1.5 bg-foreground/10 rounded-full text-xs">
+                  {field.value?.length || 0} / 3
+                </span>
+              </FormLabel>
+              <MultiSelect
+                options={usersOptions}
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                placeholder="Sélectionner un/des membre(s)"
+                variant="default"
+                maxCount={3}
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          size={"lg"}
+          disabled={isPending}
+          className="w-full">
+          {isPending ? (
+            <>
+              <LucideLoader className="size-4 mr-2 animate-spin" />
+              <span>Chargement...</span>
+            </>
+          ) : (
+            "Ajouter cette entreprise"
+          )}
+        </Button>
+      </form>
+    </Form>
+  );
+}
+
+export default CompaniesAddForm;
