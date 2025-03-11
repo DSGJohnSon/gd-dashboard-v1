@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import CompaniesAdd from "@/features/companies/components/companies-add";
+import CompaniesList from "@/features/companies/components/companies-list";
 import UsersList from "@/features/users/components/users-list";
 import React from "react";
 
@@ -17,6 +18,7 @@ function DashboardAdminPage() {
         <h2 className="font-bold mb-2 mt-8">Companies</h2>
         <div>
           <CompaniesAdd />
+          <CompaniesList />
         </div>
       </section>
     </main>

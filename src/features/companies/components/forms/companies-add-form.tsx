@@ -62,7 +62,6 @@ function CompaniesAddForm() {
     },
   });
   function onSubmit(values: z.infer<typeof AddCompanySchema>) {
-    console.log(values);
     mutate(values);
   }
 
@@ -86,7 +85,7 @@ function CompaniesAddForm() {
             </FormItem>
           )}
         />
-        <div className="space-y-2 border border-foreground/10 p-4 rounded-lg">
+        <div className="space-y-2 border border-input p-4 rounded-lg">
           <div className="inline-flex items-center space-x-1 px-3 py-1 bg-foreground/5  rounded-full">
             <LucideBuilding className="size-3" />
             <h2 className="text-xs">Informations légales</h2>
@@ -164,7 +163,7 @@ function CompaniesAddForm() {
               <FormLabel>
                 Membre(s) de l'entreprise -{" "}
                 <span className="py-0.5 px-1.5 bg-foreground/10 rounded-full text-xs">
-                  {field.value?.length || 0} / 3
+                  {field.value?.length || 0} / 5
                 </span>
               </FormLabel>
               <MultiSelect
@@ -173,7 +172,7 @@ function CompaniesAddForm() {
                 defaultValue={field.value}
                 placeholder="Sélectionner un/des membre(s)"
                 variant="default"
-                maxCount={3}
+                maxCount={5}
               />
               <FormMessage />
             </FormItem>

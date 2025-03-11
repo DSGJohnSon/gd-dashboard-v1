@@ -42,7 +42,7 @@ export const useCreateCompany = () => {
         }
       }
       router.refresh();
-      queryClient.invalidateQueries({ queryKey: ["current"] });
+      queryClient.invalidateQueries({ queryKey: ["companies"] });
     },
     onError: (error: Error) => {
       //Récupérer le message d'erreur personnalisé
