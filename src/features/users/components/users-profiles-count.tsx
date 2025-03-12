@@ -28,52 +28,28 @@ function UsersProfilesCount({ userIds }: { userIds: string[] }) {
 
   return (
     <div className="flex -space-x-2">
-      {users.total < 3 ? (
+      {users.total < 4 ? (
         users.data.map((user) => {
           return (
-            <span
-              key={user.$id}
-              className="flex items-center justify-center w-5 h-5 bg-foreground text-background rounded-full border border-background">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger>
-                    <Avatar className="w-full h-full object-cover">
-                      <AvatarImage src={user.avatarUrl} />
-                      <AvatarFallback>
-                        {user.name.charAt(0).toUpperCase() || (
-                          <LucideUser className="size-[1.05rem] mt-1" />
-                        )}
-                      </AvatarFallback>
-                    </Avatar>
-                  </TooltipTrigger>
-                  <TooltipContent>{user.name}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </span>
+            <div key={user.$id}>
+              <UserProfileCircle avatarUrl={user.avatarUrl} name={user.name} />
+            </div>
           );
         })
       ) : (
         <>
-          <span className="flex items-center justify-center w-5 h-5 bg-foreground text-background rounded-full border border-background">
-            <Avatar className="w-full h-full object-cover">
-              <AvatarImage src={users.data[0].avatarUrl} />
-              <AvatarFallback>
-                {users.data[0].name.charAt(0).toUpperCase() || (
-                  <LucideUser className="size-[1.05rem] mt-1" />
-                )}
-              </AvatarFallback>
-            </Avatar>
-          </span>
-          <span className="flex items-center justify-center w-5 h-5 bg-foreground text-background rounded-full border border-background">
-            <Avatar className="w-full h-full object-cover">
-              <AvatarImage src={users.data[1].avatarUrl} />
-              <AvatarFallback>
-                {users.data[1].name.charAt(0).toUpperCase() || (
-                  <LucideUser className="size-[1.05rem] mt-1" />
-                )}
-              </AvatarFallback>
-            </Avatar>
-          </span>
+          <UserProfileCircle
+            avatarUrl={users.data[0].avatarUrl}
+            name={users.data[0].name}
+          />
+          <UserProfileCircle
+            avatarUrl={users.data[1].avatarUrl}
+            name={users.data[1].name}
+          />
+          <UserProfileCircle
+            avatarUrl={users.data[2].avatarUrl}
+            name={users.data[2].name}
+          />
           <span className="flex items-center justify-center w-5 h-5 bg-foreground text-background text-xs rounded-full border border-background">
             {`+${users.total - 2}`}
           </span>
@@ -82,5 +58,33 @@ function UsersProfilesCount({ userIds }: { userIds: string[] }) {
     </div>
   );
 }
+
+const UserProfileCircle = ({
+  avatarUrl,
+  name,
+}: {
+  avatarUrl?: string;
+  name: string;
+}) => {
+  return (
+    <span className="flex items-center justify-center w-5 h-5 bg-foreground text-background rounded-full border border-background">
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <Avatar className="w-full h-full object-cover">
+              <AvatarImage src={avatarUrl} />
+              <AvatarFallback>
+                {name.charAt(0).toUpperCase() || (
+                  <LucideUser className="size-[1.05rem] mt-1" />
+                )}
+              </AvatarFallback>
+            </Avatar>
+          </TooltipTrigger>
+          <TooltipContent>{name}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    </span>
+  );
+};
 
 export default UsersProfilesCount;

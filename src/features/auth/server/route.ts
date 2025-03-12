@@ -8,6 +8,7 @@ import { AUTH_COOKIE } from "../constants";
 import { sessionMiddleware } from "@/lib/session-middleware";
 import { DATABASE_ID, PROFILES_ID } from "@/config";
 import { HTTPException } from "hono/http-exception";
+import { avatars } from "@/data/avatars";
 
 const app = new Hono()
   .get("current", sessionMiddleware, async (c) => {
@@ -90,6 +91,7 @@ const app = new Hono()
         const { databases } = await createAdminClient();
         await databases.createDocument(DATABASE_ID, PROFILES_ID, ID.unique(), {
           userId: user.$id,
+          avatarUrl: avatars[Math.floor(Math.random() * avatars.length)],
         });
       } catch (error) {
         console.log(error);

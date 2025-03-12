@@ -18,7 +18,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateCompany } from "../../api/use-create-company";
 import { LucideBuilding, LucideLoader } from "lucide-react";
-import { useListAllUsers } from "@/features/users/api/use-get-users";
+import { useGetAllUsers } from "@/features/users/api/use-get-users";
 import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,
@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/select";
 import Flag from "react-world-flags";
 import { countries } from "@/data/countries";
-import { cn } from "@/lib/utils";
 
 type usersOptionsProps = {
   value: string;
@@ -38,13 +37,13 @@ type usersOptionsProps = {
 
 function CompaniesAddForm() {
   const { mutate, isPending } = useCreateCompany();
-  const { data: users, isLoading } = useListAllUsers();
+  const { data: users, isLoading } = useGetAllUsers();
   const [usersOptions, setUsersOptions] = useState<usersOptionsProps[]>([]);
 
   useEffect(() => {
     let temp: usersOptionsProps[] = [];
     if (users) {
-      temp = users.data.users.map((user) => ({
+      temp = users.data.data.map((user) => ({
         value: user.$id,
         label: `${user.name} - (${user.email})`,
       }));
@@ -73,7 +72,7 @@ function CompaniesAddForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nom de l'entreprise</FormLabel>
+              <FormLabel>Nom de l&apos;entreprise</FormLabel>
               <FormControl>
                 <Input
                   placeholder="Nom de l'entreprise"
@@ -95,7 +94,7 @@ function CompaniesAddForm() {
             name="siret"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Numéro d'identification</FormLabel>
+                <FormLabel>Numéro d&apos;identification</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="ex: SIRET (xxx xxx xxx xxxxx)"
@@ -113,7 +112,7 @@ function CompaniesAddForm() {
             name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Pays d'immatriculation</FormLabel>
+                <FormLabel>Pays d&apos;immatriculation</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}>
@@ -147,7 +146,7 @@ function CompaniesAddForm() {
                   </SelectContent>
                 </Select>
                 <FormDescription>
-                  Pays de résidence fiscale de l'entreprise.
+                  Pays de résidence fiscale de l&apos;entreprise.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -161,7 +160,7 @@ function CompaniesAddForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                Membre(s) de l'entreprise -{" "}
+                Membre(s) de l&apos;entreprise -{" "}
                 <span className="py-0.5 px-1.5 bg-foreground/10 rounded-full text-xs">
                   {field.value?.length || 0} / 5
                 </span>
@@ -170,6 +169,7 @@ function CompaniesAddForm() {
                 options={usersOptions}
                 onValueChange={field.onChange}
                 defaultValue={field.value}
+                disabled={isLoading || isPending}
                 placeholder="Sélectionner un/des membre(s)"
                 variant="default"
                 maxCount={5}

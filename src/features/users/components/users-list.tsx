@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useListAllUsers } from "../api/use-get-users";
+import { useGetAllUsers } from "../api/use-get-users";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -14,7 +14,7 @@ import { LucideBan } from "lucide-react";
 import UsersListSkeleton from "./skeletons/users-list-skeleton";
 
 function UsersList() {
-  const { data: users, isLoading } = useListAllUsers();
+  const { data: users, isLoading } = useGetAllUsers();
 
   return (
     <div>
@@ -22,25 +22,28 @@ function UsersList() {
         <UsersListSkeleton />
       ) : (
         <ul className="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          {users?.data?.users.map((user) => (
+          {users?.data?.data.map((user) => (
             <li
               key={user.$id}
               className="py-2 px-4 rounded-md hover:bg-foreground/5 border border-input space-y-2">
               <div className="space-y-2">
                 <Avatar>
-                  <AvatarImage>
-                    <img
-                      src={user.prefs.avatar}
-                      alt={user.name}
-                      className="w-8 h-8 rounded-full"
-                    />
-                  </AvatarImage>
+                  <AvatarImage src={user.avatarUrl} />
                   <AvatarFallback>{user.name[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
-                  <span className="text-nowrap font-bold text-sm inline-block">
-                    {user.name}
-                  </span>
+                  <p className="text-nowrap font-bold text-sm inline-flex items-center">
+                    {user.name}{" "}
+                    {user.labels.includes("admin") ? (
+                      <>
+                        <span className="text-xs font-normal bg-foreground/10 text-foreground px-2 ml-1 rounded-full">
+                          Administrateur
+                        </span>
+                      </>
+                    ) : (
+                      ""
+                    )}
+                  </p>
                   <span className="inline-block text-sm">{user.email}</span>
                 </div>
               </div>

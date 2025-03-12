@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetAllCompanies } from "../api/use-get-companies";
-import { LucideBuilding, LucideUser } from "lucide-react";
+import { LucideBuilding } from "lucide-react";
 import CompaniesListSkeleton from "./skeletons/companies-list-skeleton";
 import UsersProfilesCount from "@/features/users/components/users-profiles-count";
 

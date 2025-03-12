@@ -1,18 +1,18 @@
-"use client";
-
-import { Switch } from "@/components/ui/switch";
-import { useCurrent } from "@/features/auth/api/use-current";
-import { useLogout } from "@/features/auth/api/use-logout";
-import { LucideLogOut, LucideMoon, LucideSun } from "lucide-react";
-import { useTheme } from "next-themes";
+import { getCurrent } from "@/features/auth/actions";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-export default function Home() {
-  const user = useCurrent();
+export const metadata: Metadata = {
+  title: "GoDigital - Votre Dashboard Personnel",
+  description: "",
+};
+
+export default async function Home() {
+  const user = await getCurrent();
   if (!user) {
     redirect("/sign-in");
   }
-  if (user.data?.data.labels.includes("admin")) {
+  if (user.labels.includes("admin")) {
     redirect("/admin/dashboard");
   }
 

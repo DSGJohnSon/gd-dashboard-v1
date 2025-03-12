@@ -5,13 +5,14 @@ import { QueryProvider } from "@/components/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { ModeToggle } from "@/components/mode-toggle";
+import LogoutButton from "@/features/auth/components/logout-button";
 
 const manrope = Manrope({
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "GoDigital - Dashboard",
+  title: "GoDigital",
   description: "",
 };
 
@@ -48,7 +49,10 @@ export default function RootLayout({
           enableSystem={true}
           defaultTheme="system">
           <QueryProvider>
-            <ModeToggle />
+            <div className="flex items-centers gap-4 p-2">
+              <ModeToggle />
+              <LogoutButton />
+            </div>
             {children}
             <Toaster />
           </QueryProvider>
