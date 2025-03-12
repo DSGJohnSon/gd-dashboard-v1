@@ -1,15 +1,15 @@
+import { ModeToggle } from "@/components/mode-toggle";
 import { getCurrent } from "@/features/auth/actions";
-import CompanyRedirect from "@/features/companies/components/company-redirect";
+import LogoutButton from "@/features/auth/components/logout-button";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import React from "react";
 
 export const metadata: Metadata = {
-  title: "GoDigital - Dashboard Administrateur",
+  title: "GoDigital - Dashboard",
   description: "",
 };
 
-export default async function DashboardAdminPage() {
+export default async function Home() {
   const user = await getCurrent();
   if (!user) {
     redirect("/sign-in");
@@ -19,8 +19,12 @@ export default async function DashboardAdminPage() {
   }
 
   return (
-    <main className="flex items-center justify-center h-screen w-screen">
-      <CompanyRedirect user={user} />
-    </main>
+    <div>
+      <div className="flex items-centers gap-4 p-2">
+        <ModeToggle />
+        <LogoutButton />
+      </div>
+      Homepage
+    </div>
   );
 }

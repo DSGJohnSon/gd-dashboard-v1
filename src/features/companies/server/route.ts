@@ -9,6 +9,7 @@ import {
 } from "../schemas";
 import { ID, Query } from "node-appwrite";
 import { COMPANIES_ID, DATABASE_ID } from "@/config";
+import { CompaniesSchemaReturned } from "../types";
 
 const app = new Hono()
   //*------------------*//
@@ -36,7 +37,20 @@ const app = new Hono()
       return c.json({
         success: true,
         message: "add_company_success",
-        data: result,
+        data: {
+          total: result.total,
+          data: [
+            {
+              $id: result.$id,
+              $createdAt: result.$createdAt,
+              $updatedAt: result.$updatedAt,
+              name: result.name,
+              siret: result.siret,
+              country: result.country,
+              userIds: result.userIds,
+            },
+          ],
+        } as CompaniesSchemaReturned,
       });
     }
   )
@@ -49,7 +63,18 @@ const app = new Hono()
 
     const result = await client.databases.listDocuments(
       DATABASE_ID,
-      COMPANIES_ID
+      COMPANIES_ID,
+      [
+        Query.select([
+          "$id",
+          "$createdAt",
+          "$updatedAt",
+          "name",
+          "siret",
+          "country",
+          "userIds",
+        ]),
+      ]
     );
     return c.json({ data: result });
   })
@@ -62,7 +87,17 @@ const app = new Hono()
       DATABASE_ID,
       COMPANIES_ID,
       companyId,
-      []
+      [
+        Query.select([
+          "$id",
+          "$createdAt",
+          "$updatedAt",
+          "name",
+          "siret",
+          "country",
+          "userIds",
+        ]),
+      ]
     );
     return c.json({ data: result });
   })
@@ -78,11 +113,45 @@ const app = new Hono()
       const result = await client.databases.listDocuments(
         DATABASE_ID,
         COMPANIES_ID,
-        [Query.equal("$id", companyIds)]
+        [
+          Query.equal("$id", companyIds),
+          Query.select([
+            "$id",
+            "$createdAt",
+            "$updatedAt",
+            "name",
+            "siret",
+            "country",
+            "userIds",
+          ]),
+        ]
       );
       return c.json({ data: result });
     }
   )
+  //Get List of companies by user id
+  .get("getByUserId/:userId", sessionMiddleware, async (c) => {
+    const client = await createAdminClient();
+    const { userId } = c.req.param();
+
+    const result = await client.databases.listDocuments(
+      DATABASE_ID,
+      COMPANIES_ID,
+      [
+        Query.contains("userIds", [userId]),
+        Query.select([
+          "$id",
+          "$createdAt",
+          "$updatedAt",
+          "name",
+          "siret",
+          "country",
+          "userIds",
+        ]),
+      ]
+    );
+    return c.json({ data: result });
+  })
   //*------------------*//
   //UPDATE COMPANY
   //*------------------*//

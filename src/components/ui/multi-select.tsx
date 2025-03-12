@@ -99,6 +99,12 @@ interface MultiSelectProps
    * Optional, can be used to add custom styles.
    */
   className?: string;
+
+  /**
+   * Values to disable in the multi select component.
+   * Optional, can be used to force user to check ou uncheck some choices.
+   */
+  valuesToDisabled?: string[];
 }
 
 export const MultiSelect = React.forwardRef<
@@ -114,6 +120,7 @@ export const MultiSelect = React.forwardRef<
       placeholder = "Select options",
       maxCount = 3,
       modalPopover = false,
+      valuesToDisabled = [],
       className,
       ...props
     },
@@ -282,6 +289,7 @@ export const MultiSelect = React.forwardRef<
                     <CommandItem
                       key={option.value}
                       onSelect={() => toggleOption(option.value)}
+                      disabled={valuesToDisabled.includes(option.value)}
                       className="cursor-pointer">
                       <div
                         className={cn(

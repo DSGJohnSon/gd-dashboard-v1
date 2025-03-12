@@ -1,5 +1,7 @@
+import { ModeToggle } from "@/components/mode-toggle";
 import { Separator } from "@/components/ui/separator";
 import { getCurrent } from "@/features/auth/actions";
+import LogoutButton from "@/features/auth/components/logout-button";
 import CompaniesAdd from "@/features/companies/components/companies-add";
 import CompaniesList from "@/features/companies/components/companies-list";
 import UsersList from "@/features/users/components/users-list";
@@ -23,6 +25,10 @@ export default async function DashboardAdminPage() {
 
   return (
     <main className="p-8">
+      <div className="flex items-centers gap-4 p-2">
+        <ModeToggle />
+        <LogoutButton />
+      </div>
       <h1 className="font-bold text-xl">Dashboard Admin</h1>
       <Separator className="my-4" />
       <section>

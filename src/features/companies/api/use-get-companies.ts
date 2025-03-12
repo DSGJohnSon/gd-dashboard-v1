@@ -51,6 +51,31 @@ export const useGetCompanyById = (id: string) => {
 };
 //
 //*------------------*//
+//Get companies by user id
+//*------------------*//
+export const useGetCompanyByUserId = (id: string) => {
+  const query = useQuery({
+    queryKey: ["companyByUserId", id],
+    queryFn: async () => {
+      const response = await client.api.companies.getByUserId[":userId"][
+        "$get"
+      ]({
+        param: {
+          userId: id,
+        },
+      });
+      if (!response.ok) {
+        return null;
+      }
+
+      const { data } = await response.json();
+      return data;
+    },
+  });
+  return query;
+};
+//
+//*------------------*//
 //Get all companies by ids
 //*------------------*//
 type useGetUsersByIdsResponseType = InferResponseType<

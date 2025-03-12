@@ -29,13 +29,26 @@ import {
 } from "@/components/ui/select";
 import Flag from "react-world-flags";
 import { countries } from "@/data/countries";
+import { CompaniesSchemaReturned } from "../../types";
 
 type usersOptionsProps = {
   value: string;
   label: string;
 };
 
-function CompaniesAddForm() {
+function CompaniesAddForm({
+  defaultUsersInCompany,
+  disableUsersSelect, //Permits to disable the user selection for the "new company" form (used by user and not admin)
+  onFormSubmit,
+}: {
+  defaultUsersInCompany?: string[];
+  disableUsersSelect?: boolean;
+  onFormSubmit: (data: {
+    success: boolean;
+    message: string;
+    data: CompaniesSchemaReturned;
+  }) => void;
+}) {
   const { mutate, isPending } = useCreateCompany();
   const { data: users, isLoading } = useGetAllUsers();
   const [usersOptions, setUsersOptions] = useState<usersOptionsProps[]>([]);
@@ -57,11 +70,16 @@ function CompaniesAddForm() {
       name: "",
       siret: "",
       country: "",
-      users: [],
+      users: defaultUsersInCompany || [],
     },
   });
   function onSubmit(values: z.infer<typeof AddCompanySchema>) {
-    mutate(values);
+    mutate(values, {
+      onSuccess: (data) => {
+        form.reset();
+        onFormSubmit(data);
+      },
+    });
   }
 
   return (
@@ -168,12 +186,20 @@ function CompaniesAddForm() {
               <MultiSelect
                 options={usersOptions}
                 onValueChange={field.onChange}
-                defaultValue={field.value}
-                disabled={isLoading || isPending}
+                valuesToDisabled={defaultUsersInCompany}
+                defaultValue={defaultUsersInCompany || field.value}
+                disabled={isLoading || isPending || disableUsersSelect}
                 placeholder="Sélectionner un/des membre(s)"
                 variant="default"
                 maxCount={5}
               />
+              {
+                <FormDescription>
+                  {disableUsersSelect
+                    ? "Vous pourrez ajouter des membres plus tard."
+                    : "Vous pouvez ajouter jusqu'à 5 membres."}
+                </FormDescription>
+              }
               <FormMessage />
             </FormItem>
           )}
