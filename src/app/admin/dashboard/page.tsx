@@ -11,10 +11,10 @@ function DashboardAdminPage() {
       <h1 className="font-bold text-xl">Dashboard Admin</h1>
       <Separator className="my-4" />
       <section>
-        <h2 className="font-bold mb-2">Users</h2>
+        {/* <h2 className="font-bold mb-2">Users</h2>
         <div>
           <UsersList />
-        </div>
+        </div> */}
         <h2 className="font-bold mb-2 mt-8">Companies</h2>
         <div>
           <CompaniesAdd />

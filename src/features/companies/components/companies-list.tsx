@@ -1,12 +1,15 @@
 "use client";
 
-import { useListAllCompanies } from "../api/use-list-companies";
+import { useGetAllCompanies } from "../api/use-get-companies";
 import { LucideBuilding, LucideUser } from "lucide-react";
 import CompaniesListSkeleton from "./skeletons/companies-list-skeleton";
+import UsersProfilesCount from "@/features/users/components/users-profiles-count";
 
 function CompaniesList() {
   const { data: companies, isLoading: isLoadingCompanies } =
-    useListAllCompanies();
+    useGetAllCompanies();
+
+  console.log(companies);
 
   return (
     <div>
@@ -26,31 +29,7 @@ function CompaniesList() {
                   </span>
                   <span className="inline-block text-sm">{company.siret}</span>
                 </div>
-                <div className="flex -space-x-2">
-                  {company.userIds.length < 3 ? (
-                    company.userIds.map((userId: string) => {
-                      return (
-                        <span
-                          key={userId}
-                          className="flex items-center justify-center w-5 h-5 bg-foreground text-background rounded-full border border-background">
-                          <LucideUser className="size-[1.05rem] mt-1" />
-                        </span>
-                      );
-                    })
-                  ) : (
-                    <>
-                      <span className="flex items-center justify-center w-5 h-5 bg-foreground text-background rounded-full border border-background">
-                        <LucideUser className="size-[1.05rem] mt-1" />
-                      </span>
-                      <span className="flex items-center justify-center w-5 h-5 bg-foreground text-background rounded-full border border-background">
-                        <LucideUser className="size-[1.05rem] mt-1" />
-                      </span>
-                      <span className="flex items-center justify-center w-5 h-5 bg-foreground text-background text-xs rounded-full border border-background">
-                        {`+${company.userIds.length - 2}`}
-                      </span>
-                    </>
-                  )}
-                </div>
+                <UsersProfilesCount userIds={company.userIds} />
               </div>
             </li>
           ))}

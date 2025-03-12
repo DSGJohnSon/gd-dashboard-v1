@@ -18,7 +18,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateCompany } from "../../api/use-create-company";
 import { LucideBuilding, LucideLoader } from "lucide-react";
-import { useListAllUsers } from "@/features/users/api/use-list-users";
+import { useListAllUsers } from "@/features/users/api/use-get-users";
 import { MultiSelect } from "@/components/ui/multi-select";
 import {
   Select,

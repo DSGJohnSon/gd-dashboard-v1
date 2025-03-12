@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useListAllUsers } from "../api/use-list-users";
+import { useListAllUsers } from "../api/use-get-users";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
