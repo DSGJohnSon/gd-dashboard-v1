@@ -53,7 +53,7 @@ export const useGetCompanyById = (id: string) => {
 //*------------------*//
 //Get companies by user id
 //*------------------*//
-export const useGetCompanyByUserId = (id: string) => {
+export const useGetCompaniesByUserId = (id: string) => {
   const query = useQuery({
     queryKey: ["companyByUserId", id],
     queryFn: async () => {

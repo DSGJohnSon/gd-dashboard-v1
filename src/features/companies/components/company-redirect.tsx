@@ -1,16 +1,16 @@
 "use client";
 
 import { LucideLoader } from "lucide-react";
-import { useGetCompanyByUserId } from "../api/use-get-companies";
+import { useGetCompaniesByUserId } from "../api/use-get-companies";
 import { useEffect, useMemo } from "react";
 import { useCreateCompanyModal } from "../store/use-create-workspace-company";
 import { redirect } from "next/navigation";
 
 function CompanyRedirect({ user }: { user: any }) {
   const [open, setOpen] = useCreateCompanyModal();
-  const { data: companies, isLoading } = useGetCompanyByUserId(user.$id);
+  const { data: companies, isLoading } = useGetCompaniesByUserId(user.$id);
 
-  const companyId = useMemo(() => companies?.documents[0]?.$id, [companies]);
+  const companyId = useMemo(() => companies?.data[0]?.$id, [companies]);
 
   useEffect(() => {
     if (isLoading) return;

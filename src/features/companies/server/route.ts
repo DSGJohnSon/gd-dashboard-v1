@@ -61,7 +61,7 @@ const app = new Hono()
   .get("getAll", sessionMiddleware, async (c) => {
     const client = await createAdminClient();
 
-    const result = await client.databases.listDocuments(
+    const temp = await client.databases.listDocuments(
       DATABASE_ID,
       COMPANIES_ID,
       [
@@ -76,6 +76,20 @@ const app = new Hono()
         ]),
       ]
     );
+
+    const result = {
+      total: temp.total,
+      data: temp.documents.map((company) => ({
+        $id: company.$id,
+        $createdAt: company.$createdAt,
+        $updatedAt: company.$updatedAt,
+        name: company.name,
+        siret: company.siret,
+        country: company.country,
+        userIds: company.userIds,
+      })),
+    };
+
     return c.json({ data: result });
   })
   //Get one company by id
@@ -83,7 +97,7 @@ const app = new Hono()
     const client = await createAdminClient();
     const { companyId } = c.req.param();
 
-    const result = await client.databases.getDocument(
+    const temp = await client.databases.getDocument(
       DATABASE_ID,
       COMPANIES_ID,
       companyId,
@@ -99,6 +113,17 @@ const app = new Hono()
         ]),
       ]
     );
+
+    const result = {
+      $id: temp.$id,
+      $createdAt: temp.$createdAt,
+      $updatedAt: temp.$updatedAt,
+      name: temp.name,
+      siret: temp.siret,
+      country: temp.country,
+      userIds: temp.userIds,
+    };
+
     return c.json({ data: result });
   })
   //Get all companies by ids
@@ -110,7 +135,7 @@ const app = new Hono()
       const client = await createAdminClient();
       const { companyIds } = c.req.valid("json");
 
-      const result = await client.databases.listDocuments(
+      const temp = await client.databases.listDocuments(
         DATABASE_ID,
         COMPANIES_ID,
         [
@@ -126,6 +151,20 @@ const app = new Hono()
           ]),
         ]
       );
+
+      const result = {
+        total: temp.total,
+        data: temp.documents.map((company) => ({
+          $id: company.$id,
+          $createdAt: company.$createdAt,
+          $updatedAt: company.$updatedAt,
+          name: company.name,
+          siret: company.siret,
+          country: company.country,
+          userIds: company.userIds,
+        })),
+      };
+
       return c.json({ data: result });
     }
   )
@@ -134,7 +173,7 @@ const app = new Hono()
     const client = await createAdminClient();
     const { userId } = c.req.param();
 
-    const result = await client.databases.listDocuments(
+    const temp = await client.databases.listDocuments(
       DATABASE_ID,
       COMPANIES_ID,
       [
@@ -150,6 +189,20 @@ const app = new Hono()
         ]),
       ]
     );
+
+    const result = {
+      total: temp.total,
+      data: temp.documents.map((company) => ({
+        $id: company.$id,
+        $createdAt: company.$createdAt,
+        $updatedAt: company.$updatedAt,
+        name: company.name,
+        siret: company.siret,
+        country: company.country,
+        userIds: company.userIds,
+      })),
+    };
+
     return c.json({ data: result });
   })
   //*------------------*//

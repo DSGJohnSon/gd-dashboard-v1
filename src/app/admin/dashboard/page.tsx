@@ -2,8 +2,8 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { Separator } from "@/components/ui/separator";
 import { getCurrent } from "@/features/auth/actions";
 import LogoutButton from "@/features/auth/components/logout-button";
-import CompaniesAdd from "@/features/companies/components/companies-add";
-import CompaniesList from "@/features/companies/components/companies-list";
+import CompaniesAdd from "@/features/companies/components/admin/companies-add";
+import CompaniesList from "@/features/companies/components/admin/companies-list";
 import UsersList from "@/features/users/components/users-list";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -14,13 +14,10 @@ export const metadata: Metadata = {
   description: "",
 };
 
-export default async function DashboardAdminPage() {
+export default async function Page() {
   const user = await getCurrent();
-  if (!user) {
+  if (!user || !user.labels.includes("admin")) {
     redirect("/sign-in");
-  }
-  if (!user.labels.includes("admin")) {
-    redirect("/dashboard");
   }
 
   return (

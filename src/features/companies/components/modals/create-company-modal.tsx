@@ -33,10 +33,10 @@ function CreateCompanyModal() {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Ajouter votre entreprise</DialogTitle>
+          <DialogTitle>Ajoutez une entreprise</DialogTitle>
           <DialogDescription>
-            Pour continuer, vous devez ajouter au moins une entreprise à votre
-            compte.
+            Vous êtes sur le point d&apos;ajouter une entreprise à votre compte.
+            Vous serez considéré comme le propriétaire de cette entreprise.
           </DialogDescription>
         </DialogHeader>
         {isLoading || !user ? (

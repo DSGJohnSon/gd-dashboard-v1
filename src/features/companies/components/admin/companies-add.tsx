@@ -9,8 +9,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import CompaniesAddForm from "./forms/companies-add-form";
 import { Separator } from "@/components/ui/separator";
+import CompaniesAddForm from "../forms/companies-add-form";
 
 function CompaniesAdd() {
   return (
