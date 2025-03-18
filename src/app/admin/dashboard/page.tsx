@@ -5,6 +5,7 @@ import LogoutButton from "@/features/auth/components/logout-button";
 import CompaniesAdd from "@/features/companies/components/admin/companies-add";
 import CompaniesList from "@/features/companies/components/admin/companies-list";
 import UsersList from "@/features/users/components/users-list";
+import { AuthError } from "@supabase/supabase-js";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import React from "react";
@@ -16,9 +17,11 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const user = await getCurrent();
-  if (!user || !user.labels.includes("admin")) {
+  if (user instanceof AuthError) return;
+  if (!user) {
     redirect("/sign-in");
   }
+  if (user.role !== "ADMIN") return redirect("/");
 
   return (
     <main className="p-8">

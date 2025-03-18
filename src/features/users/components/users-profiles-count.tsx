@@ -1,37 +1,20 @@
-import React, { useEffect, useState } from "react";
-import { useGetUsersByIds } from "../api/use-get-users";
 import { LucideUser } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UsersSchemaReturned } from "../types";
-import UsersProfilesCountSkeleton from "./skeletons/users-profiles-count-skeleton";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { User } from "@prisma/client";
 
-function UsersProfilesCount({ userIds }: { userIds: string[] }) {
-  const { mutate, isPending } = useGetUsersByIds();
-  const [users, setUsers] = useState<UsersSchemaReturned>({
-    total: 0,
-    data: [],
-  });
-
-  useEffect(() => {
-    if (userIds.length > 0) {
-      mutate({ userIds }, { onSuccess: (result) => setUsers(result.data) });
-    }
-  }, [userIds, mutate]);
-
-  if (isPending) return <UsersProfilesCountSkeleton />;
-
+function UsersProfilesCount({ users }: { users: User[] }) {
   return (
     <div className="flex -space-x-2">
-      {users.total < 4 ? (
-        users.data.map((user) => {
+      {users.length < 4 ? (
+        users.map((user) => {
           return (
-            <div key={user.$id}>
+            <div key={user.id}>
               <UserProfileCircle avatarUrl={user.avatarUrl} name={user.name} />
             </div>
           );
@@ -39,19 +22,19 @@ function UsersProfilesCount({ userIds }: { userIds: string[] }) {
       ) : (
         <>
           <UserProfileCircle
-            avatarUrl={users.data[0].avatarUrl}
-            name={users.data[0].name}
+            avatarUrl={users[0].avatarUrl}
+            name={users[0].name}
           />
           <UserProfileCircle
-            avatarUrl={users.data[1].avatarUrl}
-            name={users.data[1].name}
+            avatarUrl={users[1].avatarUrl}
+            name={users[1].name}
           />
           <UserProfileCircle
-            avatarUrl={users.data[2].avatarUrl}
-            name={users.data[2].name}
+            avatarUrl={users[2].avatarUrl}
+            name={users[2].name}
           />
           <span className="flex items-center justify-center w-5 h-5 bg-foreground text-background text-xs rounded-full border border-background">
-            {`+${users.total - 2}`}
+            {`+${users.length - 2}`}
           </span>
         </>
       )}

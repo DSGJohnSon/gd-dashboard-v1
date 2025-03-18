@@ -11,12 +11,13 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { useGetCompaniesByUserId } from "@/features/companies/api/use-get-companies";
-import { Models } from "node-appwrite";
+import { User } from "@prisma/client";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-  user: Models.User<Models.Preferences>;
+  user: User;
   activeCompanyId: string;
 }
 
@@ -26,25 +27,27 @@ export function AppSidebar({
   ...props
 }: AppSidebarProps) {
   const { data: companies, isLoading: isLoadingCompanies } =
-    useGetCompaniesByUserId(user.$id);
+    useGetCompaniesByUserId(user.id);
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        {isLoadingCompanies ? (
+        {isLoadingCompanies || !companies || companies === null ? (
           <GalleryVerticalEnd className="size-8" />
         ) : (
           <TeamSwitcher
-            companies={companies!.data}
+            companies={companies}
             activeCompanyId={activeCompanyId}
             isLoading={isLoadingCompanies}
           />
         )}
       </SidebarHeader>
+      <SidebarSeparator className="border-b" />
       <SidebarContent>
         {/* <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} /> */}
       </SidebarContent>
+      <SidebarSeparator className="border-b" />
       <SidebarFooter>
         <NavUser user={user} />
       </SidebarFooter>

@@ -14,6 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { getCurrent } from "@/features/auth/actions";
+import { AuthError } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
 export default async function DashboardClientLayout({
@@ -24,12 +25,11 @@ export default async function DashboardClientLayout({
   children: React.ReactNode;
 }) {
   const user = await getCurrent();
+  if (user instanceof AuthError) return;
   if (!user) {
     redirect("/sign-in");
   }
-  if (user.labels.includes("admin")) {
-    redirect("/");
-  }
+  if (user.role === "ADMIN") return redirect("/");
 
   const { companyId: activeCompanyId } = await params;
 

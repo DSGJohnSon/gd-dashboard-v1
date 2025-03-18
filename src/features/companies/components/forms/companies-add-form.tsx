@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import Flag from "react-world-flags";
 import { countries } from "@/data/countries";
-import { CompaniesSchemaReturned } from "../../types";
+import { CompaniesSchemaReturned } from "../../../../types";
 
 type usersOptionsProps = {
   value: string;
@@ -53,16 +53,16 @@ function CompaniesAddForm({
   const { data: users, isLoading } = useGetAllUsers();
   const [usersOptions, setUsersOptions] = useState<usersOptionsProps[]>([]);
 
-  useEffect(() => {
-    let temp: usersOptionsProps[] = [];
-    if (users) {
-      temp = users.data.data.map((user) => ({
-        value: user.$id,
-        label: `${user.name} - (${user.email})`,
-      }));
-    }
-    setUsersOptions(temp);
-  }, [users]);
+  // useEffect(() => {
+  //   let temp: usersOptionsProps[] = [];
+  //   if (users) {
+  //     temp = users.data.data.map((user) => ({
+  //       value: user.$id,
+  //       label: `${user.name} - (${user.email})`,
+  //     }));
+  //   }
+  //   setUsersOptions(temp);
+  // }, [users]);
 
   const form = useForm<z.infer<typeof AddCompanySchema>>({
     resolver: zodResolver(AddCompanySchema),

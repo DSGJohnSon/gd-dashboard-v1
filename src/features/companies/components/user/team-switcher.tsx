@@ -17,7 +17,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { CompaniesSchema } from "../../types";
 import { usePathname, useRouter } from "next/navigation";
 import UsersProfilesCount from "@/features/users/components/users-profiles-count";
 import Flag from "react-world-flags";
@@ -29,13 +28,14 @@ import {
 } from "@/components/ui/tooltip";
 import CopyTextComponent from "@/components/copy-text-component";
 import { useCreateCompanyModal } from "../../store/use-create-workspace-company";
+import { CompanyTypeReturned } from "../../../../types";
 
 export function TeamSwitcher({
   companies,
   activeCompanyId,
   isLoading,
 }: {
-  companies: CompaniesSchema[];
+  companies: CompanyTypeReturned[];
   activeCompanyId: string;
   isLoading: boolean;
 }) {
@@ -45,19 +45,19 @@ export function TeamSwitcher({
   const pathname = usePathname();
   const router = useRouter();
   const [activeCompany, setActiveCompany] = React.useState(
-    companies.find((company) => company.$id === activeCompanyId)
+    companies.find((company) => company.id === activeCompanyId)
   );
 
   if (isLoading || !activeCompany) {
     return null;
   }
 
-  const handleCompanyChange = (company: CompaniesSchema) => {
+  const handleCompanyChange = (company: CompanyTypeReturned) => {
     setActiveCompany(company);
 
     const newPathname = pathname.replace(
-      new RegExp(`/${activeCompany.$id}`),
-      `/${company.$id}`
+      new RegExp(`/${activeCompany.id}`),
+      `/${company.id}`
     );
 
     router.push(newPathname);
@@ -96,7 +96,7 @@ export function TeamSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Changer d&apos;entreprise
             </DropdownMenuLabel>
-            {companies.filter((company) => company.$id !== activeCompanyId)
+            {companies.filter((company) => company.id !== activeCompanyId)
               .length < 1 ? (
               <div className="bg-foreground/5 rounded-md px-2 py-1 pb-1.5 m-2">
                 <span className="text-xs text-muted-foreground text-center w-full">
@@ -105,7 +105,7 @@ export function TeamSwitcher({
               </div>
             ) : (
               companies
-                .filter((company) => company.$id !== activeCompanyId)
+                .filter((company) => company.id !== activeCompanyId)
                 .map((company) => (
                   <DropdownMenuItem
                     key={company.name}
@@ -138,7 +138,11 @@ export function TeamSwitcher({
   );
 }
 
-const ActiveCompanyDetails = ({ company }: { company: CompaniesSchema }) => {
+const ActiveCompanyDetails = ({
+  company,
+}: {
+  company: CompanyTypeReturned;
+}) => {
   return (
     <div className="bg-foreground/5 rounded-md p-3 m-2">
       <p className="text-sm font-bold max-w-full">{company.name}</p>
@@ -165,7 +169,7 @@ const ActiveCompanyDetails = ({ company }: { company: CompaniesSchema }) => {
       </div>
       <div className="flex items-center my-1">
         <span className="text-xs ml-1 text-muted-foreground mr-1">Membres</span>
-        <UsersProfilesCount userIds={company.userIds} />
+        <UsersProfilesCount users={company.users} />
       </div>
     </div>
   );

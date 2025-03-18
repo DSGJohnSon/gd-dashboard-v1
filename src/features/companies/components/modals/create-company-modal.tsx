@@ -9,12 +9,13 @@ import { useCreateCompanyModal } from "../../store/use-create-workspace-company"
 import CompaniesAddForm from "../forms/companies-add-form";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCurrent } from "@/features/auth/api/use-current";
-import { LucideLoader } from "lucide-react";
+import { AuthError } from "@supabase/supabase-js";
 
 function CreateCompanyModal() {
   const [open, setOpen] = useCreateCompanyModal();
-  const { data: user, isLoading } = useCurrent();
   const queryClient = useQueryClient();
+  const user = useCurrent();
+  if (user instanceof AuthError || !user) return;
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
@@ -22,7 +23,7 @@ function CreateCompanyModal() {
 
   const handleFormSubmit = () => {
     queryClient.invalidateQueries({
-      queryKey: ["companyByUserId", user?.data.$id],
+      queryKey: ["companyByUserId", user],
     });
     setTimeout(() => {
       setOpen(false);
@@ -39,17 +40,12 @@ function CreateCompanyModal() {
             Vous serez considéré comme le propriétaire de cette entreprise.
           </DialogDescription>
         </DialogHeader>
-        {isLoading || !user ? (
-          <div className="flex justify-center items-center h-32">
-            <LucideLoader className="animate-spin" />
-          </div>
-        ) : (
-          <CompaniesAddForm
-            onFormSubmit={handleFormSubmit}
-            defaultUsersInCompany={[user.data.$id]}
-            disableUsersSelect={true}
-          />
-        )}
+
+        <CompaniesAddForm
+          onFormSubmit={handleFormSubmit}
+          defaultUsersInCompany={[user?.id]}
+          disableUsersSelect={true}
+        />
       </DialogContent>
     </Dialog>
   );

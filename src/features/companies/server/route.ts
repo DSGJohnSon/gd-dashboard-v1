@@ -1,4 +1,3 @@
-import { createAdminClient } from "@/lib/appwrite";
 import { sessionMiddleware } from "@/lib/session-middleware";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
@@ -7,9 +6,7 @@ import {
   GetCompaniesByIdsSchema,
   UpdateCompanySchema,
 } from "../schemas";
-import { ID, Query } from "node-appwrite";
-import { COMPANIES_ID, DATABASE_ID } from "@/config";
-import { CompaniesSchemaReturned } from "../types";
+import prisma from "@/lib/prisma";
 
 const app = new Hono()
   //*------------------*//
@@ -20,37 +17,24 @@ const app = new Hono()
     sessionMiddleware,
     zValidator("json", AddCompanySchema),
     async (c) => {
-      const client = await createAdminClient();
       const { name, siret, country, users } = c.req.valid("json");
 
-      const result = await client.databases.createDocument(
-        DATABASE_ID,
-        COMPANIES_ID,
-        ID.unique(),
-        {
+      const result = await prisma.company.create({
+        data: {
           name: name,
           siret: siret,
           country: country,
-          userIds: users,
-        }
-      );
+          users: {
+            connect: users.map((userId) => ({
+              id: userId,
+            })),
+          },
+        },
+      });
+
       return c.json({
         success: true,
-        message: "add_company_success",
-        data: {
-          total: result.total,
-          data: [
-            {
-              $id: result.$id,
-              $createdAt: result.$createdAt,
-              $updatedAt: result.$updatedAt,
-              name: result.name,
-              siret: result.siret,
-              country: result.country,
-              userIds: result.userIds,
-            },
-          ],
-        } as CompaniesSchemaReturned,
+        message: `Enregistrement de l'entreprise ${result.name} réussie !`,
       });
     }
   )
@@ -58,72 +42,25 @@ const app = new Hono()
   //ALL GET REQUESTS API
   //*------------------*//
   //Get all companies of the database
-  .get("getAll", sessionMiddleware, async (c) => {
-    const client = await createAdminClient();
-
-    const temp = await client.databases.listDocuments(
-      DATABASE_ID,
-      COMPANIES_ID,
-      [
-        Query.select([
-          "$id",
-          "$createdAt",
-          "$updatedAt",
-          "name",
-          "siret",
-          "country",
-          "userIds",
-        ]),
-      ]
-    );
-
-    const result = {
-      total: temp.total,
-      data: temp.documents.map((company) => ({
-        $id: company.$id,
-        $createdAt: company.$createdAt,
-        $updatedAt: company.$updatedAt,
-        name: company.name,
-        siret: company.siret,
-        country: company.country,
-        userIds: company.userIds,
-      })),
-    };
-
+  .get("getAll", async (c) => {
+    const result = await prisma.company.findMany({
+      include: {
+        users: true,
+      },
+    });
     return c.json({ data: result });
   })
   //Get one company by id
   .get("getById/:companyId", sessionMiddleware, async (c) => {
-    const client = await createAdminClient();
     const { companyId } = c.req.param();
-
-    const temp = await client.databases.getDocument(
-      DATABASE_ID,
-      COMPANIES_ID,
-      companyId,
-      [
-        Query.select([
-          "$id",
-          "$createdAt",
-          "$updatedAt",
-          "name",
-          "siret",
-          "country",
-          "userIds",
-        ]),
-      ]
-    );
-
-    const result = {
-      $id: temp.$id,
-      $createdAt: temp.$createdAt,
-      $updatedAt: temp.$updatedAt,
-      name: temp.name,
-      siret: temp.siret,
-      country: temp.country,
-      userIds: temp.userIds,
-    };
-
+    const result = await prisma.company.findUnique({
+      where: {
+        id: companyId,
+      },
+      include: {
+        users: true,
+      },
+    });
     return c.json({ data: result });
   })
   //Get all companies by ids
@@ -132,77 +69,35 @@ const app = new Hono()
     sessionMiddleware,
     zValidator("json", GetCompaniesByIdsSchema),
     async (c) => {
-      const client = await createAdminClient();
       const { companyIds } = c.req.valid("json");
-
-      const temp = await client.databases.listDocuments(
-        DATABASE_ID,
-        COMPANIES_ID,
-        [
-          Query.equal("$id", companyIds),
-          Query.select([
-            "$id",
-            "$createdAt",
-            "$updatedAt",
-            "name",
-            "siret",
-            "country",
-            "userIds",
-          ]),
-        ]
-      );
-
-      const result = {
-        total: temp.total,
-        data: temp.documents.map((company) => ({
-          $id: company.$id,
-          $createdAt: company.$createdAt,
-          $updatedAt: company.$updatedAt,
-          name: company.name,
-          siret: company.siret,
-          country: company.country,
-          userIds: company.userIds,
-        })),
-      };
-
+      const result = await prisma.company.findMany({
+        where: {
+          id: {
+            in: companyIds,
+          },
+        },
+        include: {
+          users: true,
+        },
+      });
       return c.json({ data: result });
     }
   )
   //Get List of companies by user id
   .get("getByUserId/:userId", sessionMiddleware, async (c) => {
-    const client = await createAdminClient();
     const { userId } = c.req.param();
-
-    const temp = await client.databases.listDocuments(
-      DATABASE_ID,
-      COMPANIES_ID,
-      [
-        Query.contains("userIds", [userId]),
-        Query.select([
-          "$id",
-          "$createdAt",
-          "$updatedAt",
-          "name",
-          "siret",
-          "country",
-          "userIds",
-        ]),
-      ]
-    );
-
-    const result = {
-      total: temp.total,
-      data: temp.documents.map((company) => ({
-        $id: company.$id,
-        $createdAt: company.$createdAt,
-        $updatedAt: company.$updatedAt,
-        name: company.name,
-        siret: company.siret,
-        country: company.country,
-        userIds: company.userIds,
-      })),
-    };
-
+    const result = await prisma.company.findMany({
+      where: {
+        users: {
+          some: {
+            id: userId,
+          },
+        },
+      },
+      include: {
+        users: true,
+      },
+    });
     return c.json({ data: result });
   })
   //*------------------*//
@@ -213,25 +108,27 @@ const app = new Hono()
     sessionMiddleware,
     zValidator("json", UpdateCompanySchema),
     async (c) => {
-      const client = await createAdminClient();
       const { companyId } = c.req.param();
       const { name, siret, country, users } = c.req.valid("json");
 
-      const result = await client.databases.updateDocument(
-        DATABASE_ID,
-        COMPANIES_ID,
-        companyId,
-        {
+      const result = await prisma.company.update({
+        where: {
+          id: companyId,
+        },
+        data: {
           name: name,
           siret: siret,
           country: country,
-          userIds: users,
-        }
-      );
+          users: {
+            set: users.map((userId) => ({
+              id: userId,
+            })),
+          },
+        },
+      });
       return c.json({
         success: true,
-        message: "update_company_success",
-        data: result,
+        message: `Entreprise ${result.name} modifiée avec succès !`,
       });
     }
   )
@@ -239,18 +136,15 @@ const app = new Hono()
   //DELETE COMPANY
   //*------------------*//
   .delete("delete/:companyId", sessionMiddleware, async (c) => {
-    const client = await createAdminClient();
     const { companyId } = c.req.param();
-
-    const result = await client.databases.deleteDocument(
-      DATABASE_ID,
-      COMPANIES_ID,
-      companyId
-    );
+    const result = await prisma.company.delete({
+      where: {
+        id: companyId,
+      },
+    });
     return c.json({
       success: true,
-      message: "delete_company_success",
-      data: result,
+      message: `Entreprise ${result.name} supprimée avec succès !`,
     });
   });
 

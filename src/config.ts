@@ -1,3 +1,0 @@
-export const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
-export const PROFILES_ID = process.env.NEXT_PUBLIC_APPWRITE_PROFILES_ID!;
-export const COMPANIES_ID = process.env.NEXT_PUBLIC_APPWRITE_COMPANIES_ID!;

@@ -69,7 +69,7 @@ export function LoginForm({
                         <Input
                           placeholder="email@email.fr"
                           type="email"
-                          disabled={isPending}
+                          // disabled={isPending}
                           {...field}
                         />
                       </FormControl>
@@ -87,7 +87,7 @@ export function LoginForm({
                         <Input
                           placeholder="xxx-xxx-xxx"
                           type="password"
-                          disabled={isPending}
+                          // disabled={isPending}
                           {...field}
                         />
                       </FormControl>
